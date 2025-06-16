@@ -1,6 +1,6 @@
 {
-  "name": "npm-template",
-  "title": "NPM Template Module",
+  "name": "@pdg/masking",
+  "title": "Typescript Masking Module",
   "version": "1.0.0",
   "description": "API Module",
   "type": "module",
@@ -9,13 +9,13 @@
   "module": "dist/index.esm.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parkdigy/npm-template.git",
-    "baseUrl": "https://github.com/parkdigy/npm-template"
+    "url": "git+https://github.com/parkdigy/masking.git",
+    "baseUrl": "https://github.com/parkdigy/masking"
   },
   "bugs": {
-    "url": "https://github.com/parkdigy/npm-template/issues"
+    "url": "https://github.com/parkdigy/masking/issues"
   },
-  "homepage": "https://github.com/parkdigy/npm-template#readme",
+  "homepage": "https://github.com/parkdigy/masking#readme",
   "files": [
     "dist",
     "README.md"
@@ -36,6 +36,9 @@
     "typescript",
     "javascript"
   ],
+  "dependencies": {
+    "@pdg/formatting": "^1.0.2"
+  },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@rollup/plugin-commonjs": "^28.0.3",
