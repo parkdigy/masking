@@ -1,8 +1,8 @@
 {
   "name": "@pdg/masking",
   "title": "Typescript Masking Module",
-  "version": "1.0.0",
-  "description": "API Module",
+  "description": "Typescript Masking Module",
+  "version": "1.0.1",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
