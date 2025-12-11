@@ -2,7 +2,7 @@
   "name": "@pdg/masking",
   "title": "Typescript Masking Module",
   "description": "Typescript Masking Module",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
@@ -51,7 +51,7 @@
     "javascript"
   ],
   "dependencies": {
-    "@pdg/formatting": "^1.0.6"
+    "@pdg/formatting": "^1.0.8"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
