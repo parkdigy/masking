@@ -2,7 +2,7 @@
   "name": "@pdg/masking",
   "title": "Typescript Masking Module",
   "description": "Typescript Masking Module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
@@ -51,11 +51,12 @@
     "typescript",
     "javascript"
   ],
-  "dependencies": {
-    "@pdg/formatting": "^1.0.8"
+  "peerDependencies": {
+    "@pdg/formatting": "^1.0.9"
   },
   "devDependencies": {
     "@eslint/js": "9.39.1",
+    "@pdg/formatting": "^1.0.9",
     "@rollup/plugin-commonjs": "29.0.0",
     "@rollup/plugin-eslint": "^9.2.0",
     "@rollup/plugin-node-resolve": "16.0.3",
