@@ -4,15 +4,15 @@
 
 2026-11-02 기준 저장소의 소스, 설정, npm 스크립트를 분석했다. 이 문서는 탐색 안내이며, 실제 코드와 설정이 변경되면 해당 파일을 우선하고 문서도 갱신한다.
 
-이 프로젝트는 `@pdg/npm-template`라는 TypeScript 라이브러리 템플릿이다. 업무 도메인, 서버, 데이터베이스, UI는 없다. `src/index.ts`의 `export {};`, 문자열 소문자 변환을 확인하는 샘플 테스트 1개, 콘솔 출력 예제가 현재 구현의 전부다. 테스트 통과는 패키지 API 동작 검증을 뜻하지 않는다.
+이 프로젝트는 개인정보 문자열을 마스킹하는 TypeScript 패키지 `@pdg/masking`이다. 서버, 데이터베이스, UI는 없다. `src/index.ts`는 여섯 개의 명명된 함수와 같은 함수를 속성으로 가진 기본 객체를 내보낸다. 예제는 아직 패키지를 사용하지 않고 콘솔에 문구만 출력한다.
 
 ## 파일별 책임
 
 | 경로 | 책임과 수정 시점 |
 | --- | --- |
 | `src/index.ts` | 번들 진입점. 외부에서 사용할 함수·클래스·타입을 명시적으로 내보낼 위치 |
-| `src/` | 라이브러리 구현. 기능이 생길 때 필요한 모듈만 추가 |
-| `test/template.test.ts` | 현재 샘플 테스트. 기능 추가 시 실제 API의 입력·출력과 오류를 검증하는 테스트 추가 |
+| `src/masking{Batch,BusinessNo,Email,Name,PersonalNo,TelNo}.ts` | 일괄 처리 및 각 항목의 마스킹 구현 |
+| `test/masking*.test.ts` | 공개 함수를 통한 각 마스킹 및 일괄 처리 테스트 |
 | `examples/src/example.ts` | 현재 `Hello, World!` 출력. 실제 API 사용 예제가 필요하면 갱신 |
 | `examples/package.json` | `tsx` 실행 환경. 루트 패키지 의존성이나 workspace 연결은 현재 없음 |
 | `package.json` | 공개 진입점, 배포 파일, 개발·빌드·게시 명령 |
@@ -21,7 +21,7 @@
 | `tsconfig.test.json` / `jest.config.ts` | ts-jest 변환, Node 테스트 환경 설정 |
 | `eslint.config.js` / `.prettierrc.cjs` | 정적 검사와 포맷 기준 |
 | `.nvmrc` | Node `24.22.1` 지정 |
-| `.gitignore` / `.npmignore` | Git 추적 제외 및 npm 배포 제외 설정 |
+| `.gitignore` / `.npmignore` | Git 추적 제외 및 npm 배포 제외 설정. `dist/`는 현재 추적 중 |
 | `.git-commit.cjs` / `.git-merge.cjs` | 전체 변경 스테이징·커밋 및 원격 병합 보조 스크립트 |
 
 ## 코드에서 배포물까지
@@ -38,7 +38,7 @@ examples/src/example.ts ─ tsx ─ 콘솔 예제
 ```
 
 - `package.json`의 `main`과 `exports.require`는 `dist/index.js`, `module`과 `exports.import`는 `dist/index.esm.js`, `types`와 `exports.types`는 `dist/index.d.ts`를 가리킨다.
-- Rollup은 `dependencies`와 `peerDependencies`를 외부 의존성으로 처리하도록 구성돼 있다. 의존성 추가 시 번들 포함 여부와 소비자 설치 책임을 확인한다.
+- Rollup은 `dependencies`와 `peerDependencies`를 외부 의존성으로 처리하도록 구성돼 있다. 전화번호·사업자등록번호·주민등록번호는 peer dependency인 `@pdg/formatting`을 사용한다. 의존성 변경 시 소비자 설치 책임과 실제 동작을 확인한다.
 - 타입 선언은 `dist/`에 생성된다. Rollup의 사용자 플러그인은 `.private`로 끝나는 디렉터리와 `.private.d.ts` 파일을 제거한다. 공개 선언이 삭제 대상 타입을 참조하지 않는지 확인한다. 이는 런타임 코드의 접근 제한 기능이 아니다.
 - TypeScript는 ES2017, ESNext 모듈, `strict`, `noImplicitAny`, `verbatimModuleSyntax`를 사용한다. 타입 전용 의존성에는 `import type` / `export type`을 사용한다.
 - TypeScript 6의 `moduleResolution: bundler`를 사용하며, 이전 `baseUrl: ./src`를 통한 절대 경로 해석은 사용하지 않는다. 테스트 설정은 Jest와 Node 전역 타입을 명시한다.
@@ -69,17 +69,12 @@ examples/src/example.ts ─ tsx ─ 콘솔 예제
 2. **실행 환경:** Rollup의 `context: 'window'`는 브라우저 API 지원을 보장하지 않는다. 현재 테스트는 Node 환경이고 TypeScript `lib`는 ES2017이다. 브라우저 전용 기능을 추가하려면 지원 환경부터 정한다.
 3. **배포 범위:** `files`는 `dist`, `README.md`를 지정한다. 진입점 파일 존재와 선언 파일 누락 여부는 `npm pack --dry-run`으로 확인한다. 에이전트 문서와 작업 기록을 배포물에 포함할 이유는 없다.
 4. **예제 연결:** 예제에는 루트 패키지 의존성이 선언돼 있지 않다. 소스 직접 호출과 설치 패키지 소비 검증을 구분한다. 공개 진입점 검증이 목적이면 빌드된 패키지를 실제로 설치한 소비 환경이 필요하다.
-5. **생성 파일:** `dist/`는 현재 Git 제외 대상이다. `.gitignore`의 주석은 최종 프로젝트에서 이를 바꿀 수 있음을 안내할 뿐, 이 저장소에서 추적하도록 설정한 것은 아니다.
+5. **생성 파일:** `dist/`는 Git에서 추적 중이다. Rollup은 `dist/*`를 정리하고 다시 생성하므로 실행 전후 변경 사항을 확인하고 기존 변경을 보존한다. 생성물을 직접 편집하지 않는다.
 
-## 분석 시 실행한 검증
+## 공개 API와 동작 확인점
 
-Node `v24.22.1`, npm `11.19.1`, 기존 설치 의존성으로 다음 결과를 확인했다.
-
-| 항목 | 결과 |
-| --- | --- |
-| `npm run tsc` | 통과 |
-| `npm run lint` | 통과 |
-| `npm test -- --runInBand --watchman=false` | 1개 테스트 통과 |
-| `./node_modules/.bin/rollup -c --bundleConfigAsCjs` | 성공. 빈 진입점으로 인한 empty chunk 경고 발생 |
-
-`npm run build` 전체, 깨끗한 의존성 재설치, npm 게시, 설치 소비자의 `import` / `require` 호환성은 검증하지 않았다. 위 기록은 분석 당시 결과이며 다음 작업의 검증을 대체하지 않는다.
+- 명명된 내보내기는 `maskingBatch`, `maskingBusinessNo`, `maskingEmail`, `maskingName`, `maskingPersonalNo`, `maskingTelNo`다. 기본 내보내기 객체는 각각 `batch`, `businessNo`, `email`, `name`, `personalNo`, `telNo` 속성으로 제공한다.
+- 번호 마스킹 함수의 두 번째 인자 `formatting`은 기본값이 `true`다. `false`이면 서식 구분자 없이 반환한다. 실제 구분과 처리 결과는 `@pdg/formatting` 및 입력에 의존한다.
+- `maskingBatch`는 최상위 객체를 얕게 복사하고 유형별로 지정한 단일 키 또는 키 배열의 값 중 비어 있지 않은 문자열만 마스킹한다. 중첩 객체를 재귀적으로 처리하지 않으며, 같은 키를 여러 유형에 지정하면 코드 순서대로 처리한다.
+- 기존 테스트는 각 함수의 대표적인 입력과 출력 및 일괄 처리를 확인한다. 모든 잘못된 입력이나 개인정보 비노출을 보장하는 검증은 아니므로 변경 시 경계값과 오류 동작을 별도로 살펴본다.
+- `dist/`는 소스와 별도로 추적되므로 현재 내용이 최신 소스와 일치한다고 가정하지 않는다. 배포 변경 시 빌드 결과와 실제 설치 소비자를 확인한다.

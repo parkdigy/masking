@@ -52,7 +52,7 @@
     "javascript"
   ],
   "peerDependencies": {
-    "@pdg/formatting": "^1.0.9"
+    "@pdg/formatting": "^1.0.10"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
