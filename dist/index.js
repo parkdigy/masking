@@ -26,8 +26,9 @@ function maskingEmail(v) {
     let newEmail = value;
     if (value !== '') {
         const emails = value.split('@');
-        const emailMaskingLength = Math.ceil(emails[0].length / 2);
-        emails[0] = `${emails[0].substring(0, emails[0].length - emailMaskingLength)}${'*'.repeat(emailMaskingLength)}`;
+        const [localPart = ''] = emails;
+        const emailMaskingLength = Math.ceil(localPart.length / 2);
+        emails[0] = `${localPart.substring(0, localPart.length - emailMaskingLength)}${'*'.repeat(emailMaskingLength)}`;
         newEmail = emails.join('@');
     }
     return newEmail;
@@ -37,14 +38,17 @@ function maskingEmail(v) {
 function maskingTelNo(v, formatting$1 = true) {
     const value = v.trim();
     let newTel = value;
-    if (v !== '') {
+    if (value !== '') {
         const mobileNums = formatting.formatTelNo(value).split('-');
+        const [firstPart = '', secondPart] = mobileNums;
         switch (mobileNums.length) {
             case 1:
-                mobileNums[0] = `${mobileNums[0].substring(0, 3)}${'*'.repeat(mobileNums[0].length - 3)}`;
+                mobileNums[0] = `${firstPart.substring(0, 3)}${'*'.repeat(Math.max(0, firstPart.length - 3))}`;
                 break;
             default:
-                mobileNums[1] = '*'.repeat(mobileNums[1].length);
+                if (secondPart !== undefined) {
+                    mobileNums[1] = '*'.repeat(secondPart.length);
+                }
                 break;
         }
         newTel = mobileNums.join('');
@@ -61,8 +65,9 @@ function maskingBusinessNo(v, formatting$1 = true) {
     let newCompanyNo = value;
     if (value !== '') {
         const newCompanyNos = formatting.formatBusinessNo(value).split('-');
-        if (value.length > 2) {
-            newCompanyNos[2] = '*'.repeat(newCompanyNos[2].length);
+        const maskingPart = newCompanyNos[2];
+        if (maskingPart !== undefined) {
+            newCompanyNos[2] = '*'.repeat(maskingPart.length);
         }
         newCompanyNo = newCompanyNos.join('');
         if (formatting$1) {
@@ -78,8 +83,9 @@ function maskingPersonalNo(v, formatting$1 = true) {
     let newPersonalNo = value;
     if (value !== '') {
         const newPersonalNos = formatting.formatPersonalNo(value).split('-');
-        if (value.length > 1) {
-            newPersonalNos[1] = '*'.repeat(newPersonalNos[1].length);
+        const maskingPart = newPersonalNos[1];
+        if (maskingPart !== undefined) {
+            newPersonalNos[1] = '*'.repeat(maskingPart.length);
         }
         newPersonalNo = newPersonalNos.join('');
         if (formatting$1) {

@@ -1,6 +1,14 @@
 import { maskingTelNo } from '../src';
 
 describe('maskingTelNo', () => {
+  it('공백과 짧은 입력을 안전하게 처리한다', () => {
+    expect(maskingTelNo('   ')).toBe('');
+    expect(maskingTelNo('1')).toBe('1');
+    expect(maskingTelNo('12')).toBe('12');
+    expect(maskingTelNo('123')).toBe('123');
+    expect(maskingTelNo('1234')).toBe('123*');
+  });
+
   it('test', () => {
     expect(maskingTelNo('021234567')).toBe('02-***-4567');
     expect(maskingTelNo('0212345678')).toBe('02-****-5678');

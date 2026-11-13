@@ -6,8 +6,9 @@ export function maskingEmail(v: string) {
   let newEmail = value;
   if (value !== '') {
     const emails = value.split('@');
-    const emailMaskingLength = Math.ceil(emails[0].length / 2);
-    emails[0] = `${emails[0].substring(0, emails[0].length - emailMaskingLength)}${'*'.repeat(emailMaskingLength)}`;
+    const [localPart = ''] = emails;
+    const emailMaskingLength = Math.ceil(localPart.length / 2);
+    emails[0] = `${localPart.substring(0, localPart.length - emailMaskingLength)}${'*'.repeat(emailMaskingLength)}`;
     newEmail = emails.join('@');
   }
   return newEmail;

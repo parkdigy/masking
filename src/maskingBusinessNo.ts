@@ -9,8 +9,9 @@ export function maskingBusinessNo(v: string, formatting = true) {
   if (value !== '') {
     const newCompanyNos = formatBusinessNo(value).split('-');
 
-    if (value.length > 2) {
-      newCompanyNos[2] = '*'.repeat(newCompanyNos[2].length);
+    const maskingPart = newCompanyNos[2];
+    if (maskingPart !== undefined) {
+      newCompanyNos[2] = '*'.repeat(maskingPart.length);
     }
     newCompanyNo = newCompanyNos.join('');
     if (formatting) {

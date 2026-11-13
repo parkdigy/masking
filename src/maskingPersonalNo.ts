@@ -8,8 +8,9 @@ export function maskingPersonalNo(v: string, formatting = true) {
   let newPersonalNo = value;
   if (value !== '') {
     const newPersonalNos = formatPersonalNo(value).split('-');
-    if (value.length > 1) {
-      newPersonalNos[1] = '*'.repeat(newPersonalNos[1].length);
+    const maskingPart = newPersonalNos[1];
+    if (maskingPart !== undefined) {
+      newPersonalNos[1] = '*'.repeat(maskingPart.length);
     }
     newPersonalNo = newPersonalNos.join('');
     if (formatting) {
